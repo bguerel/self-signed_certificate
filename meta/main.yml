@@ -1,0 +1,22 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: bguerel
+  description: Generate a self-signed certificate with your own CA
+  company: BG
+  license: "license (MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - selfsigned
+    - certificate
+    - ssl
+    - tls
+...
