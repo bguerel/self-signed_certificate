@@ -3,7 +3,6 @@ dependencies: []
 
 galaxy_info:
   author: bguerel
-  role_name: self-signed_certificate
   description: Generate a self-signed certificate with your own CA
   company: BG
   license: "license (MIT)"
