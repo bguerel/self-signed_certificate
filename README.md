@@ -91,7 +91,7 @@ Use it in a playbook as follows:
 - hosts: whatever
   become: yes
   roles:
-    - self_signed_certificate
+    - self-signed_certificate
 ```
 
 License
