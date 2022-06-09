@@ -1,0 +1,125 @@
+---
+- name: Ensure python dependencies are installed.
+  package:
+    name: python3-pip
+    state: present
+  when: self_signed_install_pkgs | bool
+  tags: [ 'self_signed', 'setup_pkgs' ]
+
+- name: Ensure python openssl dependencies are installed.
+  pip:
+    name: "{{ item }}"
+    state: present
+    executable: "{{ 'pip3' if ansible_python.version.major == 3 else 'pip' }}"
+  loop:
+    - "{{ self_signed_pkgs_name }}"
+  when: self_signed_install_pkgs | bool
+  tags: [ 'self_signed', 'setup_pkgs' ]
+
+- name: The primary interface is identified.
+  shell: ip -f inet addr show $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)') | sed -En -e 's/.*inet ([0-9.]+).*/\1/p'
+  register: self_signed_ipaddress
+  changed_when: false
+  tags: [ 'self_signed' ]
+
+- name: Create directory for storing keys and certificates.
+  file:
+    path: "{{ self_signed_cert_path }}/{{ item }}"
+    state: directory
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate a private key.
+  community.crypto.openssl_privatekey:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.private.key"
+    type: RSA
+    size: 4096
+    state: present
+    force: true
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate csr.
+  community.crypto.openssl_csr:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.request.csr"
+    privatekey_path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.private.key"
+    common_name: "{{ item }}"
+    key_usage:
+      - digitalSignature
+    extended_key_usage:
+      - serverAuth
+    subject_alt_name:
+      - "IP:{{ self_signed_ipaddress.stdout }}"
+      - "IP:127.0.0.1"
+      - "DNS:{{ item }}"
+    force: true
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate private key for ca.
+  community.crypto.openssl_privatekey:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.private.key"
+    type: RSA
+    size: 4096
+    state: present
+    force: true
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate csr for ca.
+  community.crypto.openssl_csr:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.request.csr"
+    privatekey_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.private.key"
+    common_name: ca
+    organization_name: "{{ self_signed_organization_name }}"
+    basic_constraints:
+      - CA:TRUE
+      - pathlen:0
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+      - digitalSignature
+    force: true
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate self-signed ca certificate.
+  community.crypto.x509_certificate:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.certificate.crt"
+    privatekey_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.private.key"
+    csr_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.request.csr"
+    provider: selfsigned
+    selfsigned_digest: sha256
+    entrust_not_after: "+{{ self_signed_expiration_date_in_days }}d"
+    force: true
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate a certificate that is signed with our own ca certificate.
+  community.crypto.x509_certificate:
+    path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.certificate.crt"
+    csr_path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.request.csr"
+    ownca_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.certificate.crt"
+    ownca_privatekey_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.private.key"
+    provider: ownca
+    ownca_digest: sha256
+  loop: "{{ self_signed_domain[inventory_hostname] }}"
+  when: self_signed_domain[inventory_hostname] is defined
+  tags: [ 'self_signed' ]
+
+- name: Generate diffie-hellman parameters with the default size (4096 bits).
+  community.crypto.openssl_dhparam:
+    path: /etc/ssl/dhparam.pem
+    size: 4096
+    owner: root
+    group: root
+    state: present
+  when: self_signed_create_dhparam | bool
+  tags: [ 'self_signed' ]
+...
