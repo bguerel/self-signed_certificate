@@ -1,5 +1,5 @@
 ---
 # Installation tasks.
 - include_tasks: selfsigned.yml
-  tags: [ 'self_signed', 'setup_pkgs' ]
+  tags: [ 'self_signed' ]
 ...

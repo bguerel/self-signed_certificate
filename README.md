@@ -74,13 +74,6 @@ self_signed_expiration_date_in_days: 3650
 
 # Generate diffie-hellman parameters with the default size (4096 bits).
 self_signed_create_dhparam: yes
-
-# Install the packages.
-self_signed_install_pkgs: yes
-
-# Python openssl dependencies.
-self_signed_pkgs_name:
-  - pyOpenSSL
 ```
 
 ### Playbook

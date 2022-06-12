@@ -1,21 +1,4 @@
 ---
-- name: Ensure python dependencies are installed.
-  package:
-    name: python3-pip
-    state: present
-  when: self_signed_install_pkgs | bool
-  tags: [ 'self_signed', 'setup_pkgs' ]
-
-- name: Ensure python openssl dependencies are installed.
-  pip:
-    name: "{{ item }}"
-    state: present
-    executable: "{{ 'pip3' if ansible_python.version.major == 3 else 'pip' }}"
-  loop:
-    - "{{ self_signed_pkgs_name }}"
-  when: self_signed_install_pkgs | bool
-  tags: [ 'self_signed', 'setup_pkgs' ]
-
 - name: The primary interface is identified.
   shell: ip -f inet addr show $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)') | sed -En -e 's/.*inet ([0-9.]+).*/\1/p'
   register: self_signed_ipaddress
