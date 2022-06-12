@@ -5,7 +5,7 @@ Generate a self-signed certificate with your own CA
 
 [![Open Source Love](https://badges.frapsoft.com/os/v3/open-source.png?v=103)](https://opensource.org/licenses/OSL-3.0)
 [![Author](https://img.shields.io/badge/Powered%20by-Benhur%20Gürel-blue)](https://github.com/bguerel/bguerel)
-[![CI](https://github.com/bguerel/self-signed_certificate/workflows/Build/badge.svg?branch=main&event=push)](https://github.com/bguerel/self-signed_certificate/actions?query=workflow%3ABuild)
+[![CI](https://github.com/bguerel/self-signed_certificate/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/bguerel/self-signed_certificate/actions?query=workflow%3ACI)
 [![Ansible Galaxy Downloads](https://img.shields.io/ansible/role/d/52706?color=blue&label=Galaxy%20Downloads&logo=Ansible)](https://galaxy.ansible.com/bguerel/self_signed_certificate)
 [![Version](https://img.shields.io/github/v/release/bguerel/self-signed_certificate?label=self-signed_certificate&logo=Ansible)](https://github.com/bguerel/self-signed_certificate/releases)
 
