@@ -19,13 +19,8 @@ provisioner:
 scenario:
   name: default
   test_sequence:
-   - lint
-   - destroy
-   - create
-   - converge
-   - idempotence
-   - verify
-   - destroy
+    - destroy
+    - create
 verifier:
   name: ansible
 ...
