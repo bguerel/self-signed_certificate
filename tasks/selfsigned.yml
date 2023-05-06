@@ -34,7 +34,7 @@
     extended_key_usage:
       - serverAuth
     subject_alt_name:
-      - "IP:{{ self_signed_ipaddress.stdout }}"
+      #- "IP:{{ self_signed_ipaddress.stdout }}"
       - "IP:127.0.0.1"
       - "DNS:{{ item }}"
     force: true
