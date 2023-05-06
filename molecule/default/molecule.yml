@@ -3,7 +3,7 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: podman
 platforms:
   - name: instance
     image: bguerel/${MOLECULE_DISTRO:-rockylinux8}-ansible:latest
