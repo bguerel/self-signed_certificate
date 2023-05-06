@@ -66,7 +66,7 @@
     key_usage:
       - keyCertSign
       - digitalSignature
-    force: true
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
