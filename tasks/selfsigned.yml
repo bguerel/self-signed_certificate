@@ -19,7 +19,7 @@
     type: RSA
     size: 4096
     state: present
-    force: true
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
@@ -37,7 +37,7 @@
       #- "IP:{{ self_signed_ipaddress.stdout }}"
       - "IP:127.0.0.1"
       - "DNS:{{ item }}"
-    force: true
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
@@ -48,7 +48,7 @@
     type: RSA
     size: 4096
     state: present
-    force: true
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
@@ -79,7 +79,7 @@
     provider: selfsigned
     selfsigned_digest: sha256
     entrust_not_after: "+{{ self_signed_expiration_date_in_days }}d"
-    force: true
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
@@ -92,6 +92,7 @@
     ownca_privatekey_path: "{{ self_signed_cert_path }}/{{ item }}/{{ ansible_nodename }}.ca.private.key"
     provider: ownca
     ownca_digest: sha256
+    force: false
   loop: "{{ self_signed_domain[inventory_hostname] }}"
   when: self_signed_domain[inventory_hostname] is defined
   tags: [ 'self_signed' ]
