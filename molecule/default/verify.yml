@@ -1,11 +1,16 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
   hosts: all
   gather_facts: false
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: Get certificate information
+      community.crypto.x509_certificate_info:
+        path: "{{ self_signed_cert_path }}/{{ item }}/{{ item }}.certificate.crt"
+      loop: "{{ self_signed_domain[inventory_hostname] }}"
+      when: self_signed_domain[inventory_hostname] is defined
+      register: output
+      
+    - assert:
+        that:
+          - not output.results[0].expired
 ...
