@@ -1,4 +1,4 @@
 ansible 
 molecule
-molecule-plugins[docker]
-docker
+molecule-plugins[podman]
+podman
